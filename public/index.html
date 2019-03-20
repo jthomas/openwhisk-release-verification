@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Apache OpenWhisk Release Verification</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <!-- Bulma Version 0.7.4-->
+    <link rel="stylesheet" href="https://unpkg.com/bulma@0.7.4/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <style type="text/css" media="screen">
+    html,body {
+      font-family: 'Open Sans', serif;
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    .hero.is-success {
+      background: #F2F6FA;
+    }
+
+    .hero .nav, .hero.is-success .nav {
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+
+    thead th:first-child {
+      min-width: 500px;
+    }
+
+    tbody td {
+      text-align: center;
+    }
+
+    table {
+      margin-top: 80px;
+      font-size: 16px;
+    }
+
+    .hero-body > .container {
+      min-height: 800px;
+    }
+
+    .hero-body .container .subtitle {
+      margin-top: 20px;
+    }
+
+    #versions_select {
+      min-width: 450px;
+    }
+
+    #validate {
+      margin-left: 20px;
+    }
+
+    .content {
+      margin-top: 20px;
+    }
+    </style>
+</head>
+
+<body>
+    <section class="hero is-success is-fullheight">
+        <div class="hero-body">
+          <div class="container has-text-centered">
+            <h1 class="title has-text-black">
+              Apache OpenWhisk Release Verifier
+            </h1>
+            <h2 class="subtitle has-text-black is-size-4">
+              Please choose a release candidate to validate:
+            </h2>
+            <div id="versions" class="select is-loading is-large">
+              <select id="versions_select" onchange="update_release_version();">
+                <option>Loading releases...</option>
+              </select>
+            </div>
+            <button id="validate" class="button is-large" disabled onclick="update_validation_table()">Validate</button>
+            <table id="file-table" class="table is-bordered is-striped" style="display: none;">
+              <thead>
+                <tr>
+                  <th>Release Archive Source File</th>
+                  <th>LINKS</th>
+                  <th>SIGNATURE</th>
+                  <th>HASH</th>
+                  <th>LICENSE</th>
+                  <th>NOTICE</th>
+                  <th>DISCLAIMER</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="loading-row">
+                  <th>Loading release archive source files...</th>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>openwhisk-wskdeploy-0.10.0-incubating-sources.tar.gz</th>
+                  <td>✅</td>
+                  <td>✅</td>
+                  <td>✅</td>
+                  <td>❌</td>
+                  <td>✅</td>
+                  <td>✅</td>
+                </tr>
+
+              </tbody>
+            </table>
+            <div class="content has-text-black is-size-5">
+              <p>The following verification checks will be executed...</p>
+              <p>✔️  check all download links ✔️  pgp signature and sha512 hash are valid ✔️  correct LICENSE, NOTICE and DISCLAIMER files</p>
+            </div>
+          </div>
+        </div>
+    </section>
+    <script type="text/javascript">
+      const load_release_versions = async () => {
+        return new Promise(resolve => {
+          const versions = [
+            'apache-openwhisk-0.10.0-incubating-rc1',
+            'apache-openwhisk-0.9.0-incubating-rc1',
+            'apache-openwhisk-0.9.0-incubating-rc2',
+            'apache-openwhisk-0.9.8-incubating-rc1',
+            'apache-openwhisk-1.12.0-incubating-rc1',
+            'apache-openwhisk-3.19.0-incubating-rc1'
+          ]
+          setTimeout(() => resolve({ versions }), 1000)
+        })
+      }
+
+      const load_release_version = async () => {
+        return new Promise(resolve => {
+          const files = [
+            'openwhisk-cli-0.10.0-incubating-sources.tar.gz',
+            'openwhisk-client-go-0.10.0-incubating-sources.tar.gz',
+            'openwhisk-composer-0.10.0-incubating-sources.tar.gz',
+            'openwhisk-wskdeploy-0.10.0-incubating-sources.tar.gz'
+          ]
+          setTimeout(() => resolve({ files }), 1000)
+        })
+      }
+
+      const validate_release_version = async version => {
+        return new Promise(resolve => {
+          const files = [{ 
+            name: 'openwhisk-wskdeploy-0.10.0-incubating-sources.tar.gz',
+            files_valid: true,
+            sig_valid: true,
+            hash_valid: true,
+            archive_files: {
+              'DISCLAIMER.txt': true,
+              'NOTICE.txt': true,
+              'LICENSE.txt': true
+            }
+          }]
+          setTimeout(() => resolve({ files }), 1000)
+        })
+      }
+
+      const update_release_version = async () => {
+        document.getElementById("file-table").style.display = ""
+        document.getElementById("loading-row").style.display = ""
+        document.querySelectorAll("tbody tr:not(:first-child) ").forEach(elem => elem.parentNode.removeChild(elem))
+
+        const version = document.getElementById("versions_select").value
+        const results = await load_release_version(version)
+        console.log(results)
+        
+        results.files.forEach(f => {
+          const tbody = document.querySelector("tbody")
+          const row = tbody.insertRow(tbody.rows.length)
+          row.id = f
+          row.innerHTML = `<th>${f}</th><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td>`
+        })
+
+        document.getElementById("loading-row").style.display = "none"
+        document.getElementById("validate").removeAttribute("disabled")
+      }
+
+      const update_validation_table = async () => {
+        document.getElementById("validate").classList.add("is-loading")
+        const version = document.getElementById("versions_select").value
+        const results = await validate_release_version(version)
+        console.log(results)
+        
+        results.files.forEach(f => {
+          const row = document.getElementById(f.name)
+          const to_emoji = bool => bool ? '✅' : '❌'
+          row.innerHTML = `<th>${f.name}</th>`
+            + `<td>${to_emoji(f.files_valid)}</td><td>${to_emoji(f.sig_valid)}</td>` 
+            + `<td>${to_emoji(f.hash_valid)}</td><td>${to_emoji(f.archive_files['LICENSE.txt'])}</td>`
+            + `<td>${to_emoji(f.archive_files['NOTICE.txt'])}</td><td>${to_emoji(f.archive_files['DISCLAIMER.txt'])}</td>`
+        })
+
+        document.getElementById("validate").classList.remove("is-loading")
+      }
+window.addEventListener('load', async (event) => {
+        console.log('page is fully loaded');
+        const results = await load_release_versions()
+        console.log(versions)
+
+        const options_html = results.versions.map(v => `<option>${v}</option>`)
+        document.getElementById("versions_select").innerHTML = `<option selected>Select version...</option>${options_html}`
+        document.getElementById("versions").classList.remove('is-loading')
+      });
+    </script>
+</body>
+
+</html>
