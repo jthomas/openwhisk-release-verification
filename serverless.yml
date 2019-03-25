@@ -1,0 +1,29 @@
+service: release-verfication
+
+provider:
+  name: openwhisk
+  runtime: nodejs:10
+
+functions:
+  versions:
+    handler: index.versions
+    events:
+      - http: GET /api/versions
+  version_files:
+    handler: index.version_files
+    events:
+      - http:
+          method: GET
+          path: /api/versions/{version}
+          resp: http
+  validate_version_file:
+    handler: index.validate_version_file
+    events:
+      - http:
+          method: GET
+          path: /api/versions/{version}/validate
+          resp: http
+
+
+plugins:
+  - serverless-openwhisk

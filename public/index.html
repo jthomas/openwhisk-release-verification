@@ -63,6 +63,18 @@
 </head>
 
 <body>
+  <div id="error_dialog" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title has-text-danger has-text-weight-bold">API Error</p>
+        <button class="delete" aria-label="close" onclick="hide_error();"></button>
+      </header>
+      <section class="modal-card-body">
+        <p id="error_body" class="is-size-4"></p>
+      </section>
+    </div>
+  </div>
     <section class="hero is-success is-fullheight">
         <div class="hero-body">
           <div class="container has-text-centered">
@@ -144,94 +156,89 @@
         </div>
     </section>
     <script type="text/javascript">
-      const load_release_versions = async () => {
-        return new Promise(resolve => {
-          const versions = [
-            'apache-openwhisk-0.10.0-incubating-rc1',
-            'apache-openwhisk-0.9.0-incubating-rc1',
-            'apache-openwhisk-0.9.0-incubating-rc2',
-            'apache-openwhisk-0.9.8-incubating-rc1',
-            'apache-openwhisk-1.12.0-incubating-rc1',
-            'apache-openwhisk-3.19.0-incubating-rc1'
-          ]
-          setTimeout(() => resolve({ versions }), 1000)
-        })
+      const API_ENDPOINT = 'https://a7a99aa5.eu-gb.apiconnect.appdomain.cloud/api'
+
+      const show_error = message => {
+        document.getElementById('error_body').innerHTML = message
+        document.getElementById('error_dialog').classList.add('is-active')
       }
 
-      const load_release_version = async () => {
-        return new Promise(resolve => {
-          const files = [
-            'openwhisk-cli-0.10.0-incubating-sources.tar.gz',
-            'openwhisk-client-go-0.10.0-incubating-sources.tar.gz',
-            'openwhisk-composer-0.10.0-incubating-sources.tar.gz',
-            'openwhisk-wskdeploy-0.10.0-incubating-sources.tar.gz'
-          ]
-          setTimeout(() => resolve({ files }), 1000)
-        })
+      const hide_error = () => {
+        document.getElementById('error_dialog').classList.remove('is-active')
       }
 
-      const validate_release_version = async version => {
-        return new Promise(resolve => {
-          const files = [{ 
-            name: 'openwhisk-wskdeploy-0.10.0-incubating-sources.tar.gz',
-            files_valid: true,
-            sig_valid: true,
-            hash_valid: true,
-            archive_files: {
-              'DISCLAIMER.txt': true,
-              'NOTICE.txt': true,
-              'LICENSE.txt': true
-            }
-          }]
-          setTimeout(() => resolve({ files }), 1000)
-        })
+      const fetch_url = async (url) => {
+        const resp = await fetch(url)
+        const result = await resp.json()
+        if (!resp.ok) throw new Error(result.error)
+        return result
       }
+
+      const load_release_versions = () => fetch_url(`${API_ENDPOINT}/versions`)
+      const load_release_version = version => fetch_url(`${API_ENDPOINT}/versions/${version}`)
+      const validate_release_version = version => fetch_url(`${API_ENDPOINT}/versions/${version}/validate`)
 
       const update_release_version = async () => {
         document.getElementById("file-table").style.display = ""
         document.getElementById("loading-row").style.display = ""
         document.querySelectorAll("tbody tr:not(:first-child) ").forEach(elem => elem.parentNode.removeChild(elem))
 
-        const version = document.getElementById("versions_select").value
-        const results = await load_release_version(version)
-        console.log(results)
-        
-        results.files.forEach(f => {
-          const tbody = document.querySelector("tbody")
-          const row = tbody.insertRow(tbody.rows.length)
-          row.id = f
-          row.innerHTML = `<th>${f}</th><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td>`
-        })
+        try {
+          const version = document.getElementById("versions_select").value
+          const results = await load_release_version(version)
+          console.log(results)
 
-        document.getElementById("loading-row").style.display = "none"
-        document.getElementById("validate").removeAttribute("disabled")
+          results.files.forEach(f => {
+            const tbody = document.querySelector("tbody")
+            const row = tbody.insertRow(tbody.rows.length)
+            row.id = f
+            row.innerHTML = `<th>${f}</th><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td>`
+          })
+
+          document.getElementById("loading-row").style.display = "none"
+          document.getElementById("validate").removeAttribute("disabled")
+        } catch (err) {
+          console.log(err)
+          show_error(err.message)
+        }
       }
 
       const update_validation_table = async () => {
         document.getElementById("validate").classList.add("is-loading")
         const version = document.getElementById("versions_select").value
-        const results = await validate_release_version(version)
-        console.log(results)
-        
-        results.files.forEach(f => {
-          const row = document.getElementById(f.name)
-          const to_emoji = bool => bool ? '✅' : '❌'
-          row.innerHTML = `<th>${f.name}</th>`
-            + `<td>${to_emoji(f.files_valid)}</td><td>${to_emoji(f.sig_valid)}</td>` 
-            + `<td>${to_emoji(f.hash_valid)}</td><td>${to_emoji(f.archive_files['LICENSE.txt'])}</td>`
-            + `<td>${to_emoji(f.archive_files['NOTICE.txt'])}</td><td>${to_emoji(f.archive_files['DISCLAIMER.txt'])}</td>`
-        })
+        try {
+          const results = await validate_release_version(version)
+          console.log(results)
 
-        document.getElementById("validate").classList.remove("is-loading")
+          results.files.forEach(f => {
+            const row = document.getElementById(f.name)
+            const to_emoji = bool => bool ? '✅' : '❌'
+            row.innerHTML = `<th>${f.name}</th>`
+              + `<td>${to_emoji(f.files_valid)}</td><td>${to_emoji(f.sig_valid)}</td>` 
+              + `<td>${to_emoji(f.hash_valid)}</td><td>${to_emoji(f.archive_files['LICENSE.txt'])}</td>`
+              + `<td>${to_emoji(f.archive_files['NOTICE.txt'])}</td><td>${to_emoji(f.archive_files['DISCLAIMER.txt'])}</td>`
+          })
+
+          document.getElementById("validate").classList.remove("is-loading")
+        } catch (err) {
+          console.log(err)
+          show_error(err.message)
+        }
       }
-window.addEventListener('load', async (event) => {
-        console.log('page is fully loaded');
-        const results = await load_release_versions()
-        console.log(versions)
 
-        const options_html = results.versions.map(v => `<option>${v}</option>`)
-        document.getElementById("versions_select").innerHTML = `<option selected>Select version...</option>${options_html}`
-        document.getElementById("versions").classList.remove('is-loading')
+      window.addEventListener('load', async (event) => {
+        console.log('page is fully loaded');
+        try {
+          const results = await load_release_versions()
+          console.log(versions)
+
+          const options_html = results.versions.map(v => `<option>${v}</option>`)
+          document.getElementById("versions_select").innerHTML = `<option selected>Select version...</option>${options_html}`
+          document.getElementById("versions").classList.remove('is-loading')
+        } catch (err) {
+          console.log(err)
+          show_error(err.message)
+        }
       });
     </script>
 </body>
