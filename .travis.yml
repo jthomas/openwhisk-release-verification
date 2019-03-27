@@ -1,6 +1,19 @@
 language: node_js
+node_js:
+  - "10"
 
 install:
   - curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
   - npm install serverless -g
   - npm install
+
+before_script:
+  - npm test
+  - ibmcloud login --apikey $IBMCLOUD_API_KEY -a $IBMCLOUD_API_ENDPOINT
+  - ibmcloud target -o $IBMCLOUD_ORG -s $IBMCLOUD_SPACE
+  - ibmcloud fn api list > /dev/null
+  - ibmcloud target
+
+script:
+  - sls deploy
+  - npm run acceptance-prod
