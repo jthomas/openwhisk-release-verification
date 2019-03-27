@@ -4,6 +4,7 @@ node_js:
 
 install:
   - curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+  - ibmcloud plugin install cloud-functions
   - npm install serverless -g
   - npm install
 
@@ -16,4 +17,15 @@ before_script:
 
 script:
   - sls deploy
+  - npm run acceptance-prod
+
+before_deploy:
+  - ibmcloud target -s $IBMCLOUD_SPACE
+  - ibmcloud fn api list > /dev/null
+  - ibmcloud target
+
+deploy:
+  - sls deploy
+
+after_deploy:
   - npm run acceptance-prod
