@@ -4,7 +4,9 @@
   "description": "Apache OpenWhisk Release Verification Tool",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava test/unit/",
+    "acceptance-test": "HOST=apache-api-test.jamesthom.as ava -v --fail-fast test/acceptance/",
+    "acceptance-prod": "HOST=apache-api.jamesthom.as ava -v --fail-fast  test/acceptance/"
   },
   "author": "James Thomas <james@jamesthom.as> (https://jamesthom.as)",
   "license": "Apache-2.0",
@@ -15,6 +17,7 @@
     "tar": "^4.4.8"
   },
   "devDependencies": {
+    "ava": "^1.4.0",
     "serverless-openwhisk": ">=0.13.0"
   }
 }

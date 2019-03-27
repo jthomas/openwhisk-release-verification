@@ -4,7 +4,7 @@ This tools helps to verify release candidates for the Apache OpenWhisk project.
 
 ![Apache OpenWhisk Release Candidate Verification Tool](release-verification-tool.gif)
 
-
+**Live version running at http://apache.jamesthom.as**
 
 It automatically runs the following verification steps from the [release checklist](https://cwiki.apache.org/confluence/display/OPENWHISK/How+to+verify+the+release+checklist+and+vote+on+OpenWhisk+modules+under+Apache). 
 
