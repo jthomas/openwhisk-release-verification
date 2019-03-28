@@ -2,6 +2,23 @@ import test from 'ava'
 import releases from '../../lib/releases.js'
 import fs from 'fs'
 
+test('should parse project id from project file name', t => {
+  let id = releases.project_file('openwhisk-something-0.0.0-incubating-sources.tar.gz')
+  t.is(id, 'Something')
+
+  id = releases.project_file('openwhisk-multi-word-project-1.2.3-incubating-sources.tar.gz')
+  t.is(id, 'Multi Word Project')
+
+  // deal with all the corner cases in naming!
+  id = releases.project_file('openwhisk-0.9.0-incubating-sources.tar.gz')
+  t.is(id, '')
+
+  id = releases.project_file('openwhisk-apigateway-0.9.0-incubating-sources.tar.gz')
+  t.is(id, 'API Gateway')
+
+  id = releases.project_file('openwhisk-cli-0.9.0-incubating-sources.tar.gz')
+  t.is(id, 'Command-line Interface (CLI)')
+})
 
 test('should parse release versions from html page', async t => {
   const html = fs.readFileSync('./test/unit/resources/versions.html', 'utf-8')
