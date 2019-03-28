@@ -35,6 +35,10 @@
       text-align: center;
     }
 
+    tbody .has-text-link {
+      text-decoration: underline;
+    }
+
     table {
       margin-top: 80px;
       font-size: 16px;
@@ -178,6 +182,8 @@
       const load_release_version = version => fetch_url(`${API_ENDPOINT}/versions/${version}`)
       const validate_release_version = version => fetch_url(`${API_ENDPOINT}/versions/${version}/validate`)
 
+      const to_url = (version, name) => `https://dist.apache.org/repos/dist/dev/incubator/openwhisk/${version}/${name}`
+
       const update_release_version = async () => {
         document.getElementById("file-table").style.display = ""
         document.getElementById("loading-row").style.display = ""
@@ -192,7 +198,8 @@
             const tbody = document.querySelector("tbody")
             const row = tbody.insertRow(tbody.rows.length)
             row.id = f
-            row.innerHTML = `<th>${f}</th><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td>`
+            row.innerHTML = `<th class="has-text-link"><a href="${to_url(version, f)}">${f}</a></th>` 
+              + `<td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td>`
           })
 
           document.getElementById("loading-row").style.display = "none"
@@ -202,6 +209,7 @@
           show_error(err.message)
         }
       }
+
 
       const update_validation_table = async () => {
         document.getElementById("validate").classList.add("is-loading")
@@ -213,7 +221,7 @@
           results.files.forEach(f => {
             const row = document.getElementById(f.name)
             const to_emoji = bool => bool ? '✅' : '❌'
-            row.innerHTML = `<th>${f.name}</th>`
+            row.innerHTML = `<th class="has-text-link"><a href="${to_url(version, f.name)}">${f.name}</a></th>`
               + `<td>${to_emoji(f.files_valid)}</td><td>${to_emoji(f.sig_valid)}</td>` 
               + `<td>${to_emoji(f.hash_valid)}</td><td>${to_emoji(f.archive_files['LICENSE.txt'])}</td>`
               + `<td>${to_emoji(f.archive_files['NOTICE.txt'])}</td><td>${to_emoji(f.archive_files['DISCLAIMER.txt'])}</td>`
