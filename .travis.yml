@@ -25,7 +25,8 @@ before_deploy:
   - ibmcloud target
 
 deploy:
-  - sls deploy
+  provider: script
+  script: sls deploy
 
 after_deploy:
   - npm run acceptance-prod
