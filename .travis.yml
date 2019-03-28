@@ -17,7 +17,7 @@ before_script:
 
 script:
   - sls deploy
-  - npm run acceptance-prod
+  - npm run acceptance-test
 
 before_deploy:
   - ibmcloud target -s $IBMCLOUD_PROD_SPACE
