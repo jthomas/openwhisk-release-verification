@@ -11,7 +11,7 @@ install:
 before_script:
   - npm test
   - ibmcloud login --apikey $IBMCLOUD_API_KEY -a $IBMCLOUD_API_ENDPOINT
-  - ibmcloud target -o $IBMCLOUD_ORG -s $IBMCLOUD_SPACE
+  - ibmcloud target -o $IBMCLOUD_ORG -s $IBMCLOUD_TEST_SPACE
   - ibmcloud fn api list > /dev/null
   - ibmcloud target
 
@@ -20,7 +20,7 @@ script:
   - npm run acceptance-prod
 
 before_deploy:
-  - ibmcloud target -s $IBMCLOUD_SPACE
+  - ibmcloud target -s $IBMCLOUD_PROD_SPACE
   - ibmcloud fn api list > /dev/null
   - ibmcloud target
 
