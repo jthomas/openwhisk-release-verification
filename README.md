@@ -1,5 +1,7 @@
 ## Apache OpenWhisk Release Candidate Verification Tool
 
+[![Build Status](https://travis-ci.org/jthomas/openwhisk-release-verification.svg?branch=master)](https://travis-ci.org/jthomas/openwhisk-release-verification)
+
 This tools helps to verify release candidates for the Apache OpenWhisk project.
 
 ![Apache OpenWhisk Release Candidate Verification Tool](release-verification-tool.gif)
