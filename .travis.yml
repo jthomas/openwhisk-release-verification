@@ -26,8 +26,5 @@ before_deploy:
 
 deploy:
   provider: script
-  script: sls deploy
+  script: sls deploy && npm run acceptance-prod
   skip_cleanup: true
-
-after_deploy:
-  - npm run acceptance-prod
