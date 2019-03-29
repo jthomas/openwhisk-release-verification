@@ -52,6 +52,20 @@ Host the `index.html` and `index.css` static web files on a web server, e.g. usi
 python -mSimpleHTTPServer
 ```
 
+## development
+
+### unit tests
+
+```
+npm test
+```
+
+### api tests
+
+```
+HOST=<API_HOST> ava -v --fail-fast test/acceptance/
+```
+
 ## issues / feedback / comments?
 
 Please open an issue in the repo. PRs welcome obviously 😜...

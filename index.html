@@ -77,6 +77,11 @@
     #logs .content {
       margin-top: 0;
     }
+
+    .github {
+      position: fixed;
+      right: 0;
+    }
     </style>
 </head>
 
@@ -94,6 +99,7 @@
     </div>
   </div>
     <section class="hero is-success is-fullheight">
+        <a href="https://github.com/jthomas/openwhisk-release-verification"><img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="github" alt="Fork me on GitHub" data-recalc-dims="1"></a>
         <div class="hero-body">
           <div class="container has-text-centered">
             <h1 class="title has-text-black">
@@ -218,6 +224,7 @@
       const update_release_version = async () => {
         document.getElementById("file-table").style.display = ""
         document.getElementById("logs").style.display = ""
+        document.querySelector("#logs pre").innerHTML = ""
         document.getElementById("loading-row").style.display = ""
         document.querySelectorAll("tbody tr:not(:first-child) ").forEach(elem => elem.parentNode.removeChild(elem))
 
