@@ -20,16 +20,16 @@ const version_files = async params => {
 
 const file_check = async (project, version, file, keys) => {
   try {
-    console.log('verifying', file)
+    console.log('validaing release file archive:', file)
     const sig = await releases.file_sig(project, version, file)
     const hash = await releases.file_hash(project, version, file)
     const file_project = releases.project_file(file)
 
     const file_name = await releases.download_file(project, version, file)
 
-    const hash_operation = verify.hash(fs.createReadStream(file_name), hash)
-    const sig_operation = verify.signature(fs.createReadStream(file_name), sig, keys)
-    const archive_operation = verify.archive_files(fs.createReadStream(file_name), file_project)
+    const hash_operation = verify.hash(fs.createReadStream(file_name), hash, file)
+    const sig_operation = verify.signature(fs.createReadStream(file_name), sig, keys, file)
+    const archive_operation = verify.archive_files(fs.createReadStream(file_name), file_project, file)
 
     const [hash_result, sig_result, archive_files] = await Promise.all([hash_operation, sig_operation, archive_operation])
 
