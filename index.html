@@ -63,6 +63,20 @@
     .content {
       margin-top: 20px;
     }
+
+    pre {
+      text-align: left;
+    }
+
+    #logs {
+      font-size: 16px;
+      min-width: 1052px;
+      width: 1052px;
+    }
+
+    #logs .content {
+      margin-top: 0;
+    }
     </style>
 </head>
 
@@ -152,6 +166,23 @@
 
               </tbody>
             </table>
+            <div id="logs" class="card" style="display: none;">
+              <header class="card-header">
+                <p class="card-header-title">
+                  Verification Logs
+                </p>
+                <a href="#" class="card-header-icon" aria-label="show validation logs" onclick="toggle_logs();">
+                  <span class="icon">
+                    <i class="fas fa-angle-right" aria-hidden="true"></i>
+                  </span>
+                </a>
+              </header>
+              <div class="card-content" style="display: none;">
+                <div class="content">
+                  <pre></pre>
+                </div>
+              </div>
+            </div>
             <div class="content has-text-black is-size-5">
               <p>The following verification checks will be executed...</p>
               <p>✔️  check all download links ✔️  pgp signature and sha512 hash are valid ✔️  correct LICENSE, NOTICE and DISCLAIMER files</p>
@@ -186,6 +217,7 @@
 
       const update_release_version = async () => {
         document.getElementById("file-table").style.display = ""
+        document.getElementById("logs").style.display = ""
         document.getElementById("loading-row").style.display = ""
         document.querySelectorAll("tbody tr:not(:first-child) ").forEach(elem => elem.parentNode.removeChild(elem))
 
@@ -210,7 +242,6 @@
         }
       }
 
-
       const update_validation_table = async () => {
         document.getElementById("validate").classList.add("is-loading")
         const version = document.getElementById("versions_select").value
@@ -227,11 +258,24 @@
               + `<td>${to_emoji(f.archive_files['NOTICE.txt'])}</td><td>${to_emoji(f.archive_files['DISCLAIMER.txt'])}</td>`
           })
 
+          const logs = (results.logs || [])
+          document.querySelector("#logs pre").innerHTML = logs.join("\n")
           document.getElementById("validate").classList.remove("is-loading")
         } catch (err) {
           console.log(err)
           show_error(err.message)
         }
+      }
+
+      let showing_logs = false
+      const toggle_logs = () => {
+        const style = showing_logs ? 'display: none;' : ''
+        const prev = showing_logs ? 'fa-angle-down' : 'fa-angle-right'
+        const next = showing_logs ? 'fa-angle-right' : 'fa-angle-down'
+
+        document.querySelector("#logs .card-content").style = style
+        document.querySelector("#logs .icon .fas").classList.replace(prev, next)
+        showing_logs = !showing_logs
       }
 
       window.addEventListener('load', async (event) => {

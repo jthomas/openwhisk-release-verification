@@ -2,6 +2,7 @@
 
 const releases = require('./lib/releases.js')
 const verify = require('./lib/verify.js')
+const logger = require('./lib/logger.js')
 const fs = require('fs')
 
 const PROJECT = 'openwhisk'
@@ -20,7 +21,7 @@ const version_files = async params => {
 
 const file_check = async (project, version, file, keys) => {
   try {
-    console.log('validaing release file archive:', file)
+    logger.log(`validaing release file archive: ${file}`)
     const sig = await releases.file_sig(project, version, file)
     const hash = await releases.file_hash(project, version, file)
     const file_project = releases.project_file(file)
@@ -44,20 +45,22 @@ const file_check = async (project, version, file, keys) => {
 }
 
 const validate_version_file = async params => {
+  logger.clear()
+
   const subpaths = params['__ow_path'].split('/')
   const version = subpaths[subpaths.length - 2]
 
-  console.log('verifying', version)
+  logger.log(`verifying ${version}`)
 
   const files = await releases.files(PROJECT, version)
-  console.log('checking the following files:', files)
+  logger.log(`checking the following files: ${files}`)
 
   const keys = await releases.keys(PROJECT)
   const file_checks = files.map(file => file_check(PROJECT, version, file, keys))
 
   const result = await Promise.all(file_checks)
 
-  return { body: { files: result } } 
+  return { body: { files: result, logs: logger.logs() } } 
 }
 
 const wrap_errors = handler => {
