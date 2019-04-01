@@ -18,6 +18,9 @@ test('should parse project id from project file name', t => {
 
   id = releases.project_file('openwhisk-cli-0.9.0-incubating-sources.tar.gz')
   t.is(id, 'Command-line Interface (CLI)')
+
+  id = releases.project_file('openwhisk-runtime-php-1.13.0-incubating-sources.tar.gz')
+  t.is(id, 'Runtime PHP')
 })
 
 test('should parse release versions from html page', async t => {
