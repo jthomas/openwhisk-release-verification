@@ -53,3 +53,14 @@ test('should extract relevant files from archive', async t => {
   }
   t.deepEqual(result, files)
 });
+
+test('should return excluded file paths from archive', async t => {
+  const archive = fs.createReadStream('./test/unit/resources/archive.tar.gz')
+  const result = await verify.excluded_files(archive)
+  t.deepEqual(result, [], 'archive should have no excluded files')
+
+  const bin_archive = fs.createReadStream('./test/unit/resources/archive-binary.tar.gz')
+  const bin_result = await verify.excluded_files(bin_archive)
+  const expected = ['archive/hello.py', 'archive/hello.tar', 'archive/node_modules/', 'archive/hello.sh', 'archive/.gradle/']
+  t.deepEqual(bin_result, expected, 'archive should have excluded files')
+});

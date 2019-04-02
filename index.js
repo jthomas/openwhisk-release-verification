@@ -31,10 +31,11 @@ const file_check = async (project, version, file, keys) => {
     const hash_operation = verify.hash(fs.createReadStream(file_name), hash, file)
     const sig_operation = verify.signature(fs.createReadStream(file_name), sig, keys, file)
     const archive_operation = verify.archive_files(fs.createReadStream(file_name), file_project, file)
+    const excluded_operation = verify.excluded_files(fs.createReadStream(file_name), file)
 
-    const [hash_result, sig_result, archive_files] = await Promise.all([hash_operation, sig_operation, archive_operation])
+    const [hash_result, sig_result, archive_files, excluded_files] = await Promise.all([hash_operation, sig_operation, archive_operation, excluded_operation])
 
-    const result = { name: file, files_valid: true, sig_valid: sig_result.valid, hash_valid: hash_result.valid, archive_files } 
+    const result = { name: file, files_valid: true, sig_valid: sig_result.valid, hash_valid: hash_result.valid, archive_files, excluded_files } 
 
     return result
   } catch (err) {

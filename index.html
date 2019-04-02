@@ -42,6 +42,7 @@
     table {
       margin-top: 80px;
       font-size: 16px;
+      width: 1160px;
     }
 
     .hero-body > .container {
@@ -70,8 +71,8 @@
 
     #logs {
       font-size: 16px;
-      min-width: 1052px;
-      width: 1052px;
+      min-width: 1160px;
+      width: 1160px;
     }
 
     #logs .content {
@@ -121,6 +122,7 @@
                   <th>LINKS</th>
                   <th>SIGNATURE</th>
                   <th>HASH</th>
+                  <th>SRC FILES</th>
                   <th>LICENSE</th>
                   <th>NOTICE</th>
                   <th>DISCLAIMER</th>
@@ -129,6 +131,11 @@
               <tbody>
                 <tr id="loading-row">
                   <th>Loading release archive source files...</th>
+                  <td>
+                    <span class="icon">
+                      <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                  </td>
                   <td>
                     <span class="icon">
                       <i class="fas fa-spinner fa-spin"></i>
@@ -238,7 +245,7 @@
             const row = tbody.insertRow(tbody.rows.length)
             row.id = f
             row.innerHTML = `<th class="has-text-link"><a href="${to_url(version, f)}">${f}</a></th>` 
-              + `<td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td>`
+              + `<td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td><td>❓</td>`
           })
 
           document.getElementById("loading-row").style.display = "none"
@@ -261,7 +268,8 @@
             const to_emoji = bool => bool ? '✅' : '❌'
             row.innerHTML = `<th class="has-text-link"><a href="${to_url(version, f.name)}">${f.name}</a></th>`
               + `<td>${to_emoji(f.files_valid)}</td><td>${to_emoji(f.sig_valid)}</td>` 
-              + `<td>${to_emoji(f.hash_valid)}</td><td>${to_emoji(f.archive_files['LICENSE.txt'])}</td>`
+              + `<td>${to_emoji(f.hash_valid)}</td><td>${to_emoji(!(f.excluded_files || []).length)}</td>`
+              + `<td>${to_emoji(f.archive_files['LICENSE.txt'])}</td>`
               + `<td>${to_emoji(f.archive_files['NOTICE.txt'])}</td><td>${to_emoji(f.archive_files['DISCLAIMER.txt'])}</td>`
           })
 
