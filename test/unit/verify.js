@@ -62,5 +62,7 @@ test('should check relevant files in invalid archive', async t => {
   }
   const binary_paths = ['archive-binary.tar.gz', 'Main.jar']
   const third_party_libs = ['node_modules']
-  t.deepEqual(result, { files, binary_paths, third_party_libs })
+  t.deepEqual(result.files, files)
+  t.deepEqual(result.third_party_libs, third_party_libs)
+  t.deepEqual(result.binary_paths.sort(), binary_paths.sort())
 })
