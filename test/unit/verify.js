@@ -45,22 +45,22 @@ test('should check DISCLAIMER matches template with project name', async t => {
   t.false(verify.disclaimer('',invalid_disclaimer, 'Project Name'))
 });
 
-test('should extract relevant files from archive', async t => {
+test('should check relevant files in archive', async t => {
   const archive = fs.createReadStream('./test/unit/resources/release.tar.gz')
-  const result = await verify.archive_files(archive, 'Client Go', '')
+  const result = await verify.archive_files(archive, 'Client Go', 'incubator-openwhisk-client-go-0.10.0-incubating-source.tar.gz')
   const files = {
     'DISCLAIMER.txt': true, 'NOTICE.txt': true, 'LICENSE.txt': true
   }
-  t.deepEqual(result, files)
+  t.deepEqual(result, { files, binary_paths: [], third_party_libs: [] })
 });
 
-test('should return excluded file paths from archive', async t => {
-  const archive = fs.createReadStream('./test/unit/resources/archive.tar.gz')
-  const result = await verify.excluded_files(archive)
-  t.deepEqual(result, [], 'archive should have no excluded files')
-
-  const bin_archive = fs.createReadStream('./test/unit/resources/archive-binary.tar.gz')
-  const bin_result = await verify.excluded_files(bin_archive)
-  const expected = ['archive/hello.py', 'archive/hello.tar', 'archive/node_modules/', 'archive/hello.sh', 'archive/.gradle/']
-  t.deepEqual(bin_result, expected, 'archive should have excluded files')
-});
+test('should check relevant files in invalid archive', async t => {
+  const archive = fs.createReadStream('./test/unit/resources/release-invalid.tar.gz')
+  const result = await verify.archive_files(archive, 'Client Go', 'incubator-openwhisk-client-go-0.10.0-incubating-source.tar.gz')
+  const files = {
+    'DISCLAIMER.txt': false, 'NOTICE.txt': false, 'LICENSE.txt': false 
+  }
+  const binary_paths = ['Main.jar', 'archive-binary.tar.gz']
+  const third_party_libs = ['node_modules']
+  t.deepEqual(result, { files, binary_paths, third_party_libs })
+})

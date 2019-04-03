@@ -13,9 +13,13 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "diff": "^4.0.1",
+    "isbinaryfile": "^4.0.0",
+    "listdirs": "^3.1.1",
     "node-fetch": "^2.3.0",
     "openpgp": "^4.4.10",
-    "tar": "^4.4.8"
+    "recursive-readdir": "^2.2.2",
+    "tar": "^4.4.8",
+    "tmp": "^0.1.0"
   },
   "devDependencies": {
     "ava": "^1.4.0",
