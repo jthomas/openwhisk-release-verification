@@ -237,6 +237,7 @@
 
         try {
           const version = document.getElementById("versions_select").value
+          window.location.hash = version
           const results = await load_release_version(version)
           console.log(results)
 
@@ -298,11 +299,20 @@
         console.log('page is fully loaded');
         try {
           const results = await load_release_versions()
-          console.log(versions)
+          console.log(results.versions)
 
           const options_html = results.versions.map(v => `<option>${v}</option>`)
           document.getElementById("versions_select").innerHTML = `<option selected>Select version...</option>${options_html}`
           document.getElementById("versions").classList.remove('is-loading')
+
+          const version = window.location.hash.replace('#', '')
+          const idx = results.versions.indexOf(version)
+          console.log(results.versions, version, idx)
+          if (idx > -1) {
+            document.getElementById("versions_select").selectedIndex = idx + 1
+            await update_release_version()
+            await update_validation_table()
+          }
         } catch (err) {
           console.log(err)
           show_error(err.message)
