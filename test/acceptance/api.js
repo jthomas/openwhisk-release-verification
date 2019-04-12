@@ -38,7 +38,7 @@ test.serial('should return 404 for validation when release candidate is invalid'
 })
 
 test.serial('should return file list of each release candidate', async t => {
-  console.log = () => {}
+  //console.log = () => {}
   const reqs = state.versions.map(async version => {
     const files_api = `https://${API_HOST}/api/versions/${version}`
     t.log('running api testing against', files_api)
@@ -53,7 +53,7 @@ test.serial('should return file list of each release candidate', async t => {
 })
 
 test.serial('should validate each release file for release candidate', async t => {
-  console.log = () => {}
+  //console.log = () => {}
   const reqs = state.versions.map(async version => {
     const validate_api = `https://${API_HOST}/api/versions/${version}/validate`
     t.log('running api testing against', validate_api)
@@ -71,7 +71,7 @@ test.serial('should validate each release file for release candidate', async t =
 })
 
 test.serial('should attempt to generate release vote text for release candidate', async t => {
-  console.log = () => {}
+  //  console.log = () => {}
   const reqs = state.versions.map(async version => {
     const validate_api = `https://${API_HOST}/api/versions/${version}/vote`
     t.log('running api testing against', validate_api)
