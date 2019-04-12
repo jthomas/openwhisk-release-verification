@@ -1,0 +1,34 @@
+Hello,
+
+This is a call to vote on releasing version %s release
+candidate %s of the following project module with artifacts
+built from the Git repositories and commit IDs listed below.
+
+%s
+
+This release is comprised of source code distribution only.
+
+You can use this UNIX script to download the release and verify the checklist below:
+https://gitbox.apache.org/repos/asf?p=incubator-openwhisk-release.git;a=blob_plain;f=tools/rcverify.sh;hb=HEAD
+
+Usage:
+curl -s "https://gitbox.apache.org/repos/asf?p=incubator-openwhisk-release.git;a=blob_plain;f=tools/rcverify.sh;hb=HEAD" -o rcverify.sh
+chmod +x rcverify.sh
+%s
+
+Please vote to approve this release:
+
+  [ ] +1 Approve the release
+  [ ]  0 Don't care
+  [ ] -1 Don't release, because ...
+
+Release verification checklist for reference:
+  [ ] Download links are valid.
+  [ ] Checksums and PGP signatures are valid.
+  [ ] DISCLAIMER is included.
+  [ ] Source code artifacts have correct names matching the current release.
+  [ ] LICENSE and NOTICE files are correct for each OpenWhisk repository.
+  [ ] All files have license headers if necessary.
+  [ ] No compiled archives bundled in source archive.
+
+This majority vote is open for at least 72 hours.

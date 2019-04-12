@@ -70,11 +70,17 @@
     }
 
     #logs {
+      margin-top: 20px;
+    }
+
+    #logs,
+    #vote_text {
       font-size: 16px;
       min-width: 1160px;
       width: 1160px;
     }
 
+    #vote_text .content,
     #logs .content {
       margin-top: 0;
     }
@@ -179,6 +185,23 @@
 
               </tbody>
             </table>
+            <div id="vote_text" class="card" style="display: none;">
+              <header class="card-header">
+                <p class="card-header-title">
+                  Release Vote Text
+                </p>
+                <a href="#" class="card-header-icon" aria-label="show vote email text" onclick="toggle_vote_text();">
+                  <span class="icon">
+                    <i class="fas fa-angle-right" aria-hidden="true"></i>
+                  </span>
+                </a>
+              </header>
+              <div class="card-content" style="display: none;">
+                <div class="content">
+                  <pre></pre>
+                </div>
+              </div>
+            </div>
             <div id="logs" class="card" style="display: none;">
               <header class="card-header">
                 <p class="card-header-title">
@@ -226,17 +249,36 @@
       const load_release_version = version => fetch_url(`${API_ENDPOINT}/versions/${version}`)
       const validate_release_version = version => fetch_url(`${API_ENDPOINT}/versions/${version}/validate`)
 
+      const load_release_vote_text = async version => {
+        const result = await fetch_url(`${API_ENDPOINT}/versions/${version}/vote`)
+        return result.text
+      }
+
       const to_url = (version, name) => `https://dist.apache.org/repos/dist/dev/incubator/openwhisk/${version}/${name}`
 
       const update_release_version = async () => {
+        const version = document.getElementById("versions_select").value
+
         document.getElementById("file-table").style.display = ""
         document.getElementById("logs").style.display = ""
         document.querySelector("#logs pre").innerHTML = ""
+
+        document.getElementById("vote_text").style.display = ""
+        document.querySelector("#vote_text pre").innerHTML =
+          `Retrieving release vote text for ${version}...`
+
+        const missing_release_vote_text = `Unable to generate the release vote text for ${version}`
+          + '\nThis feature is only available for releases created using the automated process...'
+
+        load_release_vote_text(version).then(text => {
+          text = text || missing_release_vote_text
+          document.querySelector("#vote_text pre").innerHTML = text
+        })
+
         document.getElementById("loading-row").style.display = ""
         document.querySelectorAll("tbody tr:not(:first-child) ").forEach(elem => elem.parentNode.removeChild(elem))
 
         try {
-          const version = document.getElementById("versions_select").value
           window.location.hash = version
           const results = await load_release_version(version)
           console.log(results)
@@ -285,14 +327,25 @@
       }
 
       let showing_logs = false
-      const toggle_logs = () => {
-        const style = showing_logs ? 'display: none;' : ''
-        const prev = showing_logs ? 'fa-angle-down' : 'fa-angle-right'
-        const next = showing_logs ? 'fa-angle-right' : 'fa-angle-down'
+      let showing_vote_text = false
 
-        document.querySelector("#logs .card-content").style = style
-        document.querySelector("#logs .icon .fas").classList.replace(prev, next)
+      const toggle_vote_text = () => {
+        toggle_panel("vote_text", showing_vote_text)
+        showing_vote_text = !showing_vote_text
+      }
+
+      const toggle_logs = () => {
+        toggle_panel("logs", showing_logs)
         showing_logs = !showing_logs
+      }
+
+      const toggle_panel = (id, shown) => {
+        const style = shown ? 'display: none;' : ''
+        const prev = shown ? 'fa-angle-down' : 'fa-angle-right'
+        const next = shown ? 'fa-angle-right' : 'fa-angle-down'
+
+        document.querySelector(`#${id} .card-content`).style = style
+        document.querySelector(`#${id} .icon .fas`).classList.replace(prev, next)
       }
 
       window.addEventListener('load', async (event) => {

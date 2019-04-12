@@ -23,7 +23,13 @@ functions:
           method: GET
           path: /api/versions/{version}/validate
           resp: http
-
+  version_vote_text:
+    handler: index.version_vote_text
+    events:
+      - http:
+          method: GET
+          path: /api/versions/{version}/vote
+          resp: http
 
 plugins:
   - serverless-openwhisk

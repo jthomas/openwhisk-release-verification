@@ -63,12 +63,29 @@ const validate_version_file = async params => {
   return { body: { files: result, logs: logger.logs() } } 
 }
 
+const version_vote_text = async params => {
+  const subpaths = params['__ow_path'].split('/')
+  const version = subpaths[subpaths.length - 2]
+
+  const [semver_version] = version.match(/(\d)+.(\d)+.(\d)+-incubating/)
+  const [rc_version] = version.match(/rc.$/)
+
+  let text = null
+  const config_file = await releases.config_file(semver_version, rc_version)
+
+  if (config_file) {
+    text = releases.vote_text(config_file)
+  }
+  return { body: { text } } 
+}
+
 const wrap_errors = handler => {
   const wrapper = async params => {
     try {
       const result = await handler(params)
       return result
     } catch (err) {
+      console.error(err)
       return { statusCode: err.status || 500, body: { error: err.message } } 
     }
   }
@@ -76,4 +93,9 @@ const wrap_errors = handler => {
   return wrapper
 }
 
-module.exports = { versions, version_files: wrap_errors(version_files), validate_version_file: wrap_errors(validate_version_file) }
+module.exports = { 
+  versions,
+  version_files: wrap_errors(version_files),
+  validate_version_file: wrap_errors(validate_version_file),
+  version_vote_text: wrap_errors(version_vote_text)
+}

@@ -38,6 +38,7 @@ test.serial('should return 404 for validation when release candidate is invalid'
 })
 
 test.serial('should return file list of each release candidate', async t => {
+  console.log = () => {}
   const reqs = state.versions.map(async version => {
     const files_api = `https://${API_HOST}/api/versions/${version}`
     t.log('running api testing against', files_api)
@@ -52,6 +53,7 @@ test.serial('should return file list of each release candidate', async t => {
 })
 
 test.serial('should validate each release file for release candidate', async t => {
+  console.log = () => {}
   const reqs = state.versions.map(async version => {
     const validate_api = `https://${API_HOST}/api/versions/${version}/validate`
     t.log('running api testing against', validate_api)
@@ -63,6 +65,32 @@ test.serial('should validate each release file for release candidate', async t =
     state[version] = await releases.files('openwhisk', version)
     const file_names = result.files.map(file => file.name)
     t.deepEqual(file_names, state[version])
+  })
+
+  await Promise.all(reqs)
+})
+
+test.serial('should attempt to generate release vote text for release candidate', async t => {
+  console.log = () => {}
+  const reqs = state.versions.map(async version => {
+    const validate_api = `https://${API_HOST}/api/versions/${version}/vote`
+    t.log('running api testing against', validate_api)
+
+    const resp = await fetch(validate_api)
+    if (!resp.ok) throw new Error(`Non-200 HTTP response returned @ ${validate_api}: ${resp.status}`)
+
+    const result = await resp.json()
+
+    const [semver_version] = version.match(/(\d)+.(\d)+.(\d)+-incubating/)
+    const [rc_version] = version.match(/rc.$/)
+
+    let text = null
+    const config_file = await releases.config_file(semver_version, rc_version)
+
+    if (config_file) {
+      text = releases.vote_text(config_file)
+    }
+    t.is(result.text, text)
   })
 
   await Promise.all(reqs)
