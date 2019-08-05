@@ -12,7 +12,8 @@ It automatically runs the following verification steps from the [release checkli
 
 - **Download links are valid.**
 - **Checksums and PGP signatures are valid.**
-- **DISCLAIMER, LICENSE and NOTICE files are included and correct.**
+- **LICENSE and NOTICE files are included and correct.**
+- **ASF incubation disclaimers removed.**
 
 The tool is a web application composed of a static web site (running on Github pages) and Apache OpenWhisk actions (running on IBM Cloud Functions). Actions run all verification steps in the backend.
 
