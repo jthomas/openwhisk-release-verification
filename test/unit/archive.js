@@ -27,17 +27,19 @@ test('should find binary files from extracted archive path', async t => {
 })
 
 test('should run each file validator and return result', async t => {
-  t.plan(7)
+  t.plan(9)
   const path = './test/unit/resources/'
 
   const validators = {
-    'LICENSE-valid.txt': (file, contents, project) => {
+    'LICENSE-valid.txt': (err, file, contents, project) => {
+      t.is(err, null)
       t.is(file, 'project-archive.tar.gz')
       t.is(contents, fs.readFileSync(`${path}LICENSE-valid.txt`, 'utf-8'))
       t.is(project, 'project-id')
       return true
     },
-    'DISCLAIMER-valid.txt': (file, contents, project) => {
+    'DISCLAIMER-valid.txt': (err, file, contents, project) => {
+      t.is(err, null)
       t.is(file, 'project-archive.tar.gz')
       t.is(contents, fs.readFileSync(`${path}DISCLAIMER-valid.txt`, 'utf-8'))
       t.is(project, 'project-id')
@@ -46,4 +48,22 @@ test('should run each file validator and return result', async t => {
   }
   const result = archive.file_validators(path, validators, 'project-id', 'project-archive.tar.gz')
   t.deepEqual(result, {'LICENSE-valid.txt': true, 'DISCLAIMER-valid.txt': false})
+})
+
+test('should call file validator with fs error', async t => {
+  t.plan(6)
+  const path = './test/unit/resources/'
+
+  const validators = {
+    'MISSING-FILE.txt': (err, file, contents, project) => {
+      t.is(err.code, 'ENOENT')
+      t.is(err.message, `ENOENT: no such file or directory, open '${path}/MISSING-FILE.txt'`)
+      t.is(file, 'project-archive.tar.gz')
+      t.is(contents, null)
+      t.is(project, 'project-id')
+      return true
+    }
+  }
+  const result = archive.file_validators(path, validators, 'project-id', 'project-archive.tar.gz')
+  t.deepEqual(result, {'MISSING-FILE.txt': true})
 })

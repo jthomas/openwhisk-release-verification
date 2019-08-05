@@ -24,7 +24,7 @@ test.serial('should return 404 for file list when release candidate is invalid',
   const resp = await fetch(files_api)
   t.is(resp.status, 404)
   const result = await resp.json()
-  t.deepEqual(result.error, 'release file at https://dist.apache.org/repos/dist/dev/incubator/openwhisk/unknown unavailable, status code: 404')
+  t.deepEqual(result.error, 'release file at https://dist.apache.org/repos/dist/dev/openwhisk/unknown unavailable, status code: 404')
 })
 
 test.serial('should return 404 for validation when release candidate is invalid', async t => {
@@ -34,7 +34,7 @@ test.serial('should return 404 for validation when release candidate is invalid'
   const resp = await fetch(files_api)
   t.is(resp.status, 404)
   const result = await resp.json()
-  t.deepEqual(result.error, 'release file at https://dist.apache.org/repos/dist/dev/incubator/openwhisk/unknown unavailable, status code: 404')
+  t.deepEqual(result.error, 'release file at https://dist.apache.org/repos/dist/dev/openwhisk/unknown unavailable, status code: 404')
 })
 
 test.serial('should return file list of each release candidate', async t => {
@@ -81,7 +81,7 @@ test.serial('should attempt to generate release vote text for release candidate'
 
     const result = await resp.json()
 
-    const [semver_version] = version.match(/(\d)+.(\d)+.(\d)+-incubating/)
+    const [semver_version] = version.match(/(\d)+.(\d)+.(\d)+/)
     const [rc_version] = version.match(/rc.$/)
 
     let text = null

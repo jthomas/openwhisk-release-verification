@@ -36,7 +36,7 @@ sls deploy
 
 This will create the actions exposed as the following API endpoints.
 
-- `GET /api/versions` - return list of release candidates from [here](https://dist.apache.org/repos/dist/dev/incubator/openwhisk/).
+- `GET /api/versions` - return list of release candidates from [here](https://dist.apache.org/repos/dist/dev/openwhisk/).
 - `GET /api/versions/{version}` - return release candidate file list.
 - `GET /api/versions/{version}/validate` - validate release candidate.
 

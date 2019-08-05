@@ -21,44 +21,55 @@ test('should validate PGP signature against archive', async t => {
 
 test('should check LICENSE matches template', async t => {
   const valid_license = fs.readFileSync('./test/unit/resources/LICENSE-valid.txt', 'utf-8')
-  t.true(verify.license('', valid_license))
+  t.true(verify.license(null, '', valid_license))
 
   const invalid_license = fs.readFileSync('./test/unit/resources/LICENSE-invalid.txt', 'utf-8')
-  t.false(verify.license('', invalid_license))
+  t.false(verify.license(null, '', invalid_license))
 });
 
 test('should check NOTICE matches template with project name', async t => {
   const valid_notice = fs.readFileSync('./test/unit/resources/NOTICE-valid.txt', 'utf-8')
-  t.true(verify.notice('', valid_notice, 'Project Name'))
-  t.false(verify.notice('', valid_notice, 'Different Name'))
+  t.true(verify.notice(null, '', valid_notice, 'Project Name'))
+  t.false(verify.notice(null, '', valid_notice, 'Different Name'))
 
   const invalid_notice = fs.readFileSync('./test/unit/resources/NOTICE-invalid.txt', 'utf-8')
-  t.false(verify.notice('', invalid_notice, 'Project Name'))
+  t.false(verify.notice(null, '', invalid_notice, 'Project Name'))
 });
 
-test('should check DISCLAIMER matches template with project name', async t => {
-  const valid_disclaimer = fs.readFileSync('./test/unit/resources/DISCLAIMER-valid.txt', 'utf-8')
-  t.true(verify.disclaimer('', valid_disclaimer, 'Project Name'))
-  t.false(verify.disclaimer('', valid_disclaimer, 'Different Name'))
+test('should check DISCLAIMER does not exist', async t => {
+  t.plan(2)
+  try {
+    fs.readFileSync('./test/unit/resources/MISSING-FILE.txt', 'utf-8')
+  } catch (err) {
+    t.true(verify.disclaimer(err, '', null, 'Project Name'))
+  }
 
-  const invalid_disclaimer = fs.readFileSync('./test/unit/resources/DISCLAIMER-invalid.txt', 'utf-8')
-  t.false(verify.disclaimer('',invalid_disclaimer, 'Project Name'))
+  const disclaimer = fs.readFileSync('./test/unit/resources/DISCLAIMER-valid.txt', 'utf-8')
+  t.false(verify.disclaimer(null, '', disclaimer, 'Different Name'))
+});
+
+test('should check README does not contain incubation disclaimer', async t => {
+  const valid_readme = fs.readFileSync('./test/unit/resources/README-valid.md', 'utf-8')
+  t.true(verify.readme(null, '', valid_readme, 'Project Name'))
+
+  const invalid_readme = fs.readFileSync('./test/unit/resources/README-invalid.md', 'utf-8')
+  t.false(verify.readme(null, '', invalid_readme, 'Project Name'))
 });
 
 test('should check relevant files in archive', async t => {
   const archive = fs.createReadStream('./test/unit/resources/release.tar.gz')
-  const result = await verify.archive_files(archive, 'Client Go', 'incubator-openwhisk-client-go-0.10.0-incubating-source.tar.gz')
+  const result = await verify.archive_files(archive, 'Client Go', 'openwhisk-client-go-0.10.0-source.tar.gz')
   const files = {
-    'DISCLAIMER.txt': true, 'NOTICE.txt': true, 'LICENSE.txt': true
+    'DISCLAIMER.txt': true, 'NOTICE.txt': true, 'LICENSE.txt': true, 'README.md': true
   }
   t.deepEqual(result, { files, binary_paths: [], third_party_libs: [] })
 });
 
 test('should check relevant files in invalid archive', async t => {
   const archive = fs.createReadStream('./test/unit/resources/release-invalid.tar.gz')
-  const result = await verify.archive_files(archive, 'Client Go', 'incubator-openwhisk-client-go-0.10.0-incubating-source.tar.gz')
+  const result = await verify.archive_files(archive, 'Client Go', 'openwhisk-client-go-0.10.0-source.tar.gz')
   const files = {
-    'DISCLAIMER.txt': false, 'NOTICE.txt': false, 'LICENSE.txt': false 
+    'DISCLAIMER.txt': false, 'NOTICE.txt': false, 'LICENSE.txt': false, 'README.md': false
   }
   const binary_paths = ['archive-binary.tar.gz', 'Main.jar']
   const third_party_libs = ['node_modules']

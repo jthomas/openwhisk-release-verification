@@ -174,7 +174,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <th>openwhisk-wskdeploy-0.10.0-incubating-sources.tar.gz</th>
+                  <th>openwhisk-wskdeploy-0.10.0-sources.tar.gz</th>
                   <td>✅</td>
                   <td>✅</td>
                   <td>✅</td>
@@ -254,7 +254,7 @@
         return result.text
       }
 
-      const to_url = (version, name) => `https://dist.apache.org/repos/dist/dev/incubator/openwhisk/${version}/${name}`
+      const to_url = (version, name) => `https://dist.apache.org/repos/dist/dev/openwhisk/${version}/${name}`
 
       const update_release_version = async () => {
         const version = document.getElementById("versions_select").value

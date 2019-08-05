@@ -67,7 +67,7 @@ const version_vote_text = async params => {
   const subpaths = params['__ow_path'].split('/')
   const version = subpaths[subpaths.length - 2]
 
-  const [semver_version] = version.match(/(\d)+.(\d)+.(\d)+-incubating/)
+  const [semver_version] = version.match(/(\d)+.(\d)+.(\d)+/)
   const [rc_version] = version.match(/rc.$/)
 
   let text = null
