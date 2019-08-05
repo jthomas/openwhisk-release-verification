@@ -310,11 +310,12 @@
             const row = document.getElementById(f.name)
             const to_emoji = bool => bool ? '✅' : '❌'
             const has_src_files = !f.archive.binary_paths.length && !f.archive.third_party_libs.length
+            const has_disclaimers = f.archive.files['DISCLAIMER.txt'] && f.archive.files['README.md']
             row.innerHTML = `<th class="has-text-link"><a href="${to_url(version, f.name)}">${f.name}</a></th>`
               + `<td>${to_emoji(f.files_valid)}</td><td>${to_emoji(f.sig_valid)}</td>` 
               + `<td>${to_emoji(f.hash_valid)}</td><td>${to_emoji(has_src_files)}</td>`
               + `<td>${to_emoji(f.archive.files['LICENSE.txt'])}</td>`
-              + `<td>${to_emoji(f.archive.files['NOTICE.txt'])}</td><td>${to_emoji(f.archive.files['DISCLAIMER.txt'])}</td>`
+              + `<td>${to_emoji(f.archive.files['NOTICE.txt'])}</td><td>${to_emoji(has_disclaimers)}</td>`
           })
 
           const logs = (results.logs || [])
